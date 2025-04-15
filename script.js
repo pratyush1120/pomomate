@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedTime = 0;
     let progressCircumference = parseInt(getComputedStyle(progressRing).strokeDasharray);
     
-    // Mascot messages
     const mascotMessages = {
         start: [
             "Let's focus now!",
@@ -73,20 +72,17 @@ document.addEventListener('DOMContentLoaded', () => {
         "Your future self will thank you."
     ];
     
-    // Initialize streak from localStorage
     let streak = localStorage.getItem('pomoMateStreak') ? 
         parseInt(localStorage.getItem('pomoMateStreak')) : 0;
     let lastCompletedDate = localStorage.getItem('lastCompletedDate') || '';
     
     streakCount.textContent = streak;
-    
-    // Set random motivation quote
+
     function setRandomQuote() {
         const randomIndex = Math.floor(Math.random() * quotes.length);
         motivationQuote.textContent = `"${quotes[randomIndex]}"`;
     }
-    
-    // Set random mascot message
+
     function setMascotMessage(type) {
         const messages = mascotMessages[type];
         const randomIndex = Math.floor(Math.random() * messages.length);
@@ -96,23 +92,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setRandomQuote();
     setMascotMessage('idle');
     
-    // Format time (convert seconds to MM:SS)
     function formatTime(seconds) {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
     
-    // Update progress ring
     function updateProgressRing(timeLeft, totalTime) {
         const progress = timeLeft / totalTime;
         const offset = progressCircumference * (1 - progress);
         progressRing.style.strokeDashoffset = offset;
     }
     
-    // Start timer function
+
     function startTimer(minutes) {
-        // Clear any existing timers
         clearInterval(countdown);
         
         selectedTime = minutes * 60;
@@ -122,23 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Enable control buttons
         pauseBtn.disabled = false;
         resetBtn.disabled = false;
-        
-        // Add active class for animation
         timerDisplay.classList.add('timer-active');
-        
-        // Set mascot message
         setMascotMessage('start');
-        
-        // Reset progress ring
         updateProgressRing(timeLeft, selectedTime);
         
         isTimerRunning = true;
         isPaused = false;
-        
-        // Update pause button icon
         pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        
-        // Start countdown
         countdown = setInterval(() => {
             if (timeLeft <= 0) {
                 clearInterval(countdown);
@@ -161,12 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
     
-    // Pause/resume timer
+
     function togglePause() {
         if (!isTimerRunning) return;
         
         if (isPaused) {
-            // Resume timer
             isPaused = false;
             pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
             
@@ -180,8 +162,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 timeLeft--;
                 timerDisplay.textContent = formatTime(timeLeft);
                 updateProgressRing(timeLeft, selectedTime);
-                
-                // Update mascot message at certain points
                 const progress = timeLeft / selectedTime;
                 if (progress === 0.5) {
                     setMascotMessage('halfway');
@@ -190,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }, 1000);
         } else {
-            // Pause timer
             isPaused = true;
             pauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             clearInterval(countdown);
@@ -208,8 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
             isPaused = false;
             pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
         }
-        
-        // If timer was not running, disable control buttons
         if (!isTimerRunning) {
             pauseBtn.disabled = true;
             resetBtn.disabled = true;
@@ -219,33 +196,21 @@ document.addEventListener('DOMContentLoaded', () => {
         setMascotMessage('idle');
     }
     
-    // Timer completion
     function timerComplete() {
         isTimerRunning = false;
         timerDisplay.classList.remove('timer-active');
         timerDisplay.classList.add('timer-complete');
-        
-        // Play notification sound
+    
         notificationSound.play();
-        
-        // Create confetti effect
         createConfetti();
-        
-        // Update mascot
         setMascotMessage('complete');
         mascot.style.animation = 'celebrate 1s ease-in-out';
         setTimeout(() => {
             mascot.style.animation = '';
         }, 1000);
-        
-        // Update streak
         updateStreak();
-        
-        // Disable control buttons
         pauseBtn.disabled = true;
         resetBtn.disabled = true;
-        
-        // Reset display
         timerDisplay.textContent = "Done!";
         setTimeout(() => {
             timerDisplay.textContent = formatTime(selectedTime);
@@ -285,13 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Update streak counter
         function updateStreak() {
             const today = new Date().toLocaleDateString();
-            
-            // If this is the first completion or a new day
             if (lastCompletedDate !== today) {
-                // If the last completion was yesterday, increment streak
                 const yesterday = new Date();
                 yesterday.setDate(yesterday.getDate() - 1);
                 const yesterdayString = yesterday.toLocaleDateString();
@@ -299,22 +260,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (lastCompletedDate === yesterdayString || lastCompletedDate === '') {
                     streak++;
                 } else {
-                    // Streak broken, reset to 1
                     streak = 1;
                 }
-                
-                // Update localStorage
                 localStorage.setItem('pomoMateStreak', streak);
                 localStorage.setItem('lastCompletedDate', today);
-                
-                // Update display with animation
+            
                 streakCount.textContent = streak;
                 streakCount.style.animation = 'pulse 0.5s ease-in-out';
                 setTimeout(() => {
                     streakCount.style.animation = '';
                 }, 500);
                 
-                // Show new quote
                 setRandomQuote();
             }
         }
@@ -338,16 +294,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('pomoMateTheme', 'light');
             }
         }
-        
-        // Cycle through mascot messages when idle
+
         function cycleMascotMessages() {
             if (!isTimerRunning) {
                 setMascotMessage('idle');
-                setTimeout(cycleMascotMessages, 10000); // Change message every 10 seconds when idle
+                setTimeout(cycleMascotMessages, 10000); 
             }
         }
-        
-        // Initialize mascot message cycling
         setTimeout(cycleMascotMessages, 10000);
         
         // Event listeners
@@ -355,8 +308,6 @@ document.addEventListener('DOMContentLoaded', () => {
             button.addEventListener('click', () => {
                 const minutes = parseInt(button.dataset.time);
                 startTimer(minutes);
-                
-                // Add active effect to button
                 button.classList.add('active');
                 setTimeout(() => {
                     button.classList.remove('active');
@@ -367,8 +318,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pauseBtn.addEventListener('click', togglePause);
         resetBtn.addEventListener('click', resetTimer);
         themeButton.addEventListener('click', toggleTheme);
-        
-        // Initialize theme from localStorage
         const savedTheme = localStorage.getItem('pomoMateTheme');
         if (savedTheme === 'dark') {
             toggleTheme();
@@ -381,46 +330,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 mascot.style.animation = '';
             }, 800);
         }, 300);
-        
-        // Handle visibility change (tab switching)
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && isTimerRunning && !isPaused) {
-                // If the timer was running and the user comes back to the tab,
-                // update the display to account for any missed time
                 clearInterval(countdown);
                 startTimer(Math.ceil(timeLeft / 60));
             }
         });
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Space to pause/resume
-            if (e.code === 'Space' && !pauseBtn.disabled) {
-                e.preventDefault();
-                togglePause();
-            }
-            
-            // R to reset
-            if (e.code === 'KeyR' && !resetBtn.disabled) {
-                resetTimer();
-            }
-            
-            // 1, 2, 3 to start timers
-            if (e.code === 'Digit1' || e.code === 'Numpad1') {
-                startTimer(5);
-            } else if (e.code === 'Digit2' || e.code === 'Numpad2') {
-                startTimer(10);
-            } else if (e.code === 'Digit3' || e.code === 'Numpad3') {
-                startTimer(15);
-            }
-            
-            // T to toggle theme
-            if (e.code === 'KeyT') {
-                toggleTheme();
-            }
-        });
-        
-        // Calculate progress ring circumference on window resize
         window.addEventListener('resize', () => {
             progressCircumference = parseInt(getComputedStyle(progressRing).strokeDasharray);
             if (isTimerRunning) {
